@@ -11,6 +11,7 @@ app.use(
     cors({
         origin: [
             "http://localhost:3000",
+            "https://monir-portfolio-wine.vercel.app/"
         ],
         credentials: true,
     })
