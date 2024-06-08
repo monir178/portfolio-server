@@ -42,7 +42,10 @@ async function run() {
     try {
         const projectsCollection = client.db('monirPortfolio').collection('projects');
         const blogsCollection = client.db('monirPortfolio').collection('blogs');
+        const skillsCollection = client.db('monirPortfolio').collection('skills');
 
+
+        // ! Project Section
         //get all projects
         app.get('/all-projects', async (req, res) => {
             const query = {};
@@ -110,7 +113,36 @@ async function run() {
             }
         })
 
+        // update a project
+        app.patch('/projects/:id', async (req, res) => {
+            const id = req.params.id;
+            try {
+                const { _id, ...updatedFields } = req.body;
+                const result = await projectsCollection.updateOne(
+                    { _id: new ObjectId(id) },
+                    { $set: updatedFields }
+                );
+                if (result.matchedCount) {
+                    res.status(200).json({
+                        success: true,
+                        message: "Project updated successfully",
+                    });
+                } else {
+                    res.status(404).json({
+                        success: false,
+                        error: "Project not found or couldn't be updated",
+                    });
+                }
+            } catch (error) {
+                console.error("Error updating service:", error);
+                res.status(500).json({
+                    success: false,
+                    error: "Internal server error",
+                });
+            }
+        });
 
+        // ! Blogs Section
         //get all blogs
         app.get('/all-blogs', async (req, res) => {
             const query = {};
@@ -148,6 +180,34 @@ async function run() {
                 });
             }
         });
+        // update a blog
+        app.patch('/blogs/:id', async (req, res) => {
+            const id = req.params.id;
+            try {
+                const { _id, ...updatedFields } = req.body;
+                const result = await blogsCollection.updateOne(
+                    { _id: new ObjectId(id) },
+                    { $set: updatedFields }
+                );
+                if (result.matchedCount) {
+                    res.status(200).json({
+                        success: true,
+                        message: "Blog updated successfully",
+                    });
+                } else {
+                    res.status(404).json({
+                        success: false,
+                        error: "Blog not found or couldn't be updated",
+                    });
+                }
+            } catch (error) {
+                console.error("Error updating service:", error);
+                res.status(500).json({
+                    success: false,
+                    error: "Internal server error",
+                });
+            }
+        });
 
         //delete a Blog
         app.delete('/blogs/:id', async (req, res) => {
@@ -166,6 +226,103 @@ async function run() {
                     res.send({
                         success: false,
                         error: "Couldn't delete the Blog",
+                    });
+                }
+            }
+            catch (error) {
+                console.error(error.name, error.message);
+                res.send({
+                    success: false,
+                    error: error.message,
+                });
+            }
+        })
+
+        // ! Skills Section
+        //get all blogs
+        app.get('/skills', async (req, res) => {
+            const query = {};
+            const skills = await skillsCollection.find(query).toArray();
+            res.send({
+                success: true,
+                data: skills,
+                message: 'All skills retrieved successfully'
+            });
+        });
+
+        //for adding a Skill
+        app.post('/create-skill', async (req, res) => {
+            try {
+                const result = await skillsCollection.insertOne(req.body);
+
+                if (result.insertedId) {
+                    res.send({
+                        success: true,
+                        message: "Successfully added your skill",
+
+                    });
+                } else {
+                    res.send({
+                        success: false,
+                        error: "Couldn't add the skill"
+                    });
+                };
+            }
+            catch (error) {
+                console.log(error.name, error.message)
+                res.send({
+                    success: false,
+                    error: error.message,
+                });
+            }
+        });
+        // update a Skill
+        app.patch('/skills/:id', async (req, res) => {
+            const id = req.params.id;
+            try {
+                const { _id, ...updatedFields } = req.body;
+                const result = await skillsCollection.updateOne(
+                    { _id: new ObjectId(id) },
+                    { $set: updatedFields }
+                );
+                if (result.matchedCount) {
+                    res.status(200).json({
+                        success: true,
+                        message: "Skill updated successfully",
+                    });
+                } else {
+                    res.status(404).json({
+                        success: false,
+                        error: "Skill not found or couldn't be updated",
+                    });
+                }
+            } catch (error) {
+                console.error("Error updating service:", error);
+                res.status(500).json({
+                    success: false,
+                    error: "Internal server error",
+                });
+            }
+        });
+
+
+        //delete a Skill
+        app.delete('/skills/:id', async (req, res) => {
+            const id = req.params.id;
+            try {
+                const result = await skillsCollection.deleteOne({
+                    _id: new ObjectId(id)
+                });
+                if (result.deletedCount) {
+                    res.send({
+                        success: true,
+                        message: 'Skill deleted successfully.'
+                    });
+                }
+                else {
+                    res.send({
+                        success: false,
+                        error: "Couldn't delete the Skill",
                     });
                 }
             }
