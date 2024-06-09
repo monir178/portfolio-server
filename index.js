@@ -45,36 +45,7 @@ async function run() {
         const blogsCollection = client.db('monirPortfolio').collection('blogs');
         const skillsCollection = client.db('monirPortfolio').collection('skills');
 
-        // Define User schema
-        const usersCollection = client.db('monirPortfolio').collection('users');
 
-
-
-        // Route for user login
-        app.post('/login', async (req, res) => {
-            const { userName, password } = req.body;
-
-            try {
-                // Find user by username in the users collection
-                const user = await usersCollection.findOne({ userName });
-
-                if (!user) {
-                    return res.status(401).json({ message: 'Invalid username or password' });
-                }
-
-                // Check if provided password matches the stored password
-                if (password === user.password) {
-                    // If credentials match, send success response
-                    return res.json({ message: 'Login successful' });
-                } else {
-                    // If credentials don't match, send error response
-                    return res.status(401).json({ message: 'Invalid username or password' });
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                return res.status(500).json({ message: 'Internal server error' });
-            }
-        });
 
 
         // ! Project Section
