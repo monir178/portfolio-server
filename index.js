@@ -12,7 +12,8 @@ app.use(
         origin: [
             "http://localhost:3000",
             "http://localhost:5173",
-            "https://monir-portfolio-wine.vercel.app/"
+            "https://monir-portfolio-wine.vercel.app/",
+            "https://portfolio-dashboard-client.vercel.app/"
         ],
         credentials: true,
     })
