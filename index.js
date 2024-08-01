@@ -12,15 +12,14 @@ app.use(
         origin: [
             "http://localhost:3000",
             "http://localhost:5173",
-            "https://monir-portfolio-wine.vercel.app/",
-            "https://portfolio-dashboard-client.vercel.app/"
+            "https://site-monir.vercel.app",
+            "https://portfolio-dashboard-client.vercel.app"
         ],
         credentials: true,
     })
 );
 
 //middleware
-app.use(cors());
 app.use(express.json());
 
 
@@ -52,41 +51,50 @@ async function run() {
         // ! Project Section
         //get all projects
         app.get('/all-projects', async (req, res) => {
-            const query = {};
-            const projects = await projectsCollection.find(query).toArray();
-            res.send({
-                success: true,
-                data: projects,
-                message: 'All Projects retrieved successfully'
-            });
-        });
-
-        //for adding a Project
-        app.post('/create-project', async (req, res) => {
             try {
-                const result = await projectsCollection.insertOne(req.body);
-
-                if (result.insertedId) {
-                    res.send({
-                        success: true,
-                        message: "Successfully added your Project",
-
-                    });
-                } else {
-                    res.send({
-                        success: false,
-                        error: "Couldn't add the Project"
-                    });
-                };
-            }
-            catch (error) {
-                console.log(error.name, error.message)
+                const query = {};
+                const projects = await projectsCollection.find(query).sort({ createdAt: -1 }).toArray();
+                res.send({
+                    success: true,
+                    data: projects,
+                    message: 'All Projects retrieved successfully'
+                });
+            } catch (error) {
+                console.log(error.name, error.message);
                 res.send({
                     success: false,
                     error: error.message,
                 });
             }
         });
+
+
+        //for adding a Project
+        app.post('/create-project', async (req, res) => {
+            try {
+                const project = { ...req.body, createdAt: new Date() };
+                const result = await projectsCollection.insertOne(project);
+
+                if (result.insertedId) {
+                    res.send({
+                        success: true,
+                        message: "Successfully added your Project",
+                    });
+                } else {
+                    res.send({
+                        success: false,
+                        error: "Couldn't add the Project"
+                    });
+                }
+            } catch (error) {
+                console.log(error.name, error.message);
+                res.send({
+                    success: false,
+                    error: error.message,
+                });
+            }
+        });
+
 
         //delete a Project
         app.delete('/projects/:id', async (req, res) => {
